@@ -19,6 +19,14 @@ function Gameboard() {
         const boardSymbols = board.map(row => row.map(cell => cell.getSymbol()));
         console.log(boardSymbols);
     };
+    // returns false if theres still space to mark in the current game/table. True if table is full of user marks.
+    const isFull = () => {
+        let flag = true;
+        board.forEach(row => row.forEach(cell => {
+            if (cell.getSymbol() === 0) flag = false;
+        }));
+        return flag;
+    }
 
     const markSymbol = (player, row, column) => {
         if (board[row][column].getSymbol() != 0) {
@@ -31,7 +39,8 @@ function Gameboard() {
     return {
         getBoard,
         printBoard,
-        markSymbol
+        markSymbol,
+        isFull
     };
 };
 
@@ -46,7 +55,7 @@ function Cell() {
 }
 
 function GameController(playerOneName, playerTwoName) {
-    const board = Gameboard();
+    let board = Gameboard();
 
     const players = [
         {
@@ -81,18 +90,31 @@ function GameController(playerOneName, playerTwoName) {
         console.log(`${getActivePlayer().name} has marked cell [${row}, ${column}].`);
         board.getBoard()[row][column].addSymbol(getActivePlayer().token);
 
-        /*  Winner checks..
-              some code.. */
+        // Winner checks
+
+        // Tie check
+        if (board.isFull()) {
+            // end game
+            board.printBoard();
+            console.log("Tie!");
+            restartGame();
+            return;
+        }
 
         // Progress game
         switchPlayerTurn();
         printRound();
     };
 
+    const restartGame = () => {
+        console.log("Restart Game..");
+        board = Gameboard();
+    }
+
     //First round print:
     printRound();
 
-    return { playRound };
+    return { playRound, restartGame };
 }
 
 const game = GameController('Player1', 'Player2');
