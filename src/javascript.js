@@ -14,11 +14,14 @@ function Gameboard() {
     }
 
     const getBoard = () => board;
-    //logging the board with symbols only
-    const printBoard = () => {
+
+    const symbolBoard = () => {
         const boardSymbols = board.map(row => row.map(cell => cell.getSymbol()));
-        console.log(boardSymbols);
+        return boardSymbols;
     };
+    //logging the board with symbols only
+    const printBoard = () => { console.log(symbolBoard()) };
+
     // returns false if theres still space to mark in the current game/table. True if table is full of user marks.
     const isFull = () => {
         let flag = true;
@@ -29,18 +32,48 @@ function Gameboard() {
     }
 
     const markSymbol = (player, row, column) => {
-        if (board[row][column].getSymbol() != 0) {
+        if (row > 2 || row < 0 || column > 2 || column < 0) {
+            console.log('Invalid index... --> max 3 rows/columns');
+            return;
+        }
+        if (board[row][column].getSymbol() !== 0) {
             console.log(`Selected cell [${row}, ${column}] is already marked..`);
             return;
         }
         board[row][column].addSymbol(player);
     }
 
+    const checkWinner = () => {
+        const boardSymbols = symbolBoard();
+        let win = false;
+
+        // Rows 1,2,3 respectively:
+        if ((boardSymbols[0][0] !== 0 && boardSymbols[0][0] === boardSymbols[0][1] && boardSymbols[0][0] === boardSymbols[0][2]) ||
+            (boardSymbols[1][0] !== 0 && boardSymbols[1][0] === boardSymbols[1][1] && boardSymbols[1][0] === boardSymbols[1][2]) ||
+            (boardSymbols[2][0] !== 0 && boardSymbols[2][0] === boardSymbols[2][1] && boardSymbols[2][0] === boardSymbols[2][2]))
+            win = true;
+        // Columns 1,2,3 respectively:
+        else if
+            ((boardSymbols[0][0] !== 0 && boardSymbols[0][0] === boardSymbols[1][0] && boardSymbols[0][0] === boardSymbols[2][0]) ||
+            (boardSymbols[0][1] !== 0 && boardSymbols[0][1] === boardSymbols[1][1] && boardSymbols[0][1] === boardSymbols[2][1]) ||
+            (boardSymbols[0][2] !== 0 && boardSymbols[0][2] === boardSymbols[1][2] && boardSymbols[0][2] === boardSymbols[2][2]))
+            win = true;
+        // Diagonals 1,2 respectively:
+        else if
+            ((boardSymbols[0][0] !== 0 && boardSymbols[0][0] === boardSymbols[1][1] && boardSymbols[0][0] === boardSymbols[2][2]) ||
+            (boardSymbols[0][2] !== 0 && boardSymbols[0][2] === boardSymbols[1][1] && boardSymbols[0][2] === boardSymbols[2][0]))
+            win = true;
+
+        return win;
+    }
+
     return {
         getBoard,
         printBoard,
+        symbolBoard,
         markSymbol,
-        isFull
+        isFull,
+        checkWinner
     };
 };
 
@@ -48,7 +81,7 @@ function Cell() {
     // 0 = empty | 1 = player1 (X) | 2 = player2 (O)
     let value = 0;
 
-    const addSymbol = (player) => { value = player };
+    const addSymbol = (playerToken) => { value = playerToken };
     const getSymbol = () => value;
 
     return { addSymbol, getSymbol };
@@ -60,11 +93,11 @@ function GameController(playerOneName, playerTwoName) {
     const players = [
         {
             name: playerOneName,
-            token: 1
+            token: 'X'
         },
         {
             name: playerTwoName,
-            token: 2
+            token: 'O'
         }
     ];
 
@@ -81,17 +114,17 @@ function GameController(playerOneName, playerTwoName) {
     };
 
     const playRound = (row, column) => {
-        if (board.getBoard()[row][column].getSymbol() != 0) {
-            console.log(`Selected cell [${row}, ${column}] is already marked..`);
-            console.log(`Still ${getActivePlayer().name}'s turn.`);
+
+        board.markSymbol(getActivePlayer().token, row, column);
+        console.log(`${getActivePlayer().name} has marked cell [${row}, ${column}].`);
+
+        // Winner check
+        if (board.checkWinner()) {
+            board.printBoard();
+            console.log(`${getActivePlayer().name} Won!`);
+            restartGame();
             return;
         }
-        // Add corresponding symbol to cell
-        console.log(`${getActivePlayer().name} has marked cell [${row}, ${column}].`);
-        board.getBoard()[row][column].addSymbol(getActivePlayer().token);
-
-        // Winner checks
-
         // Tie check
         if (board.isFull()) {
             // end game
@@ -107,14 +140,15 @@ function GameController(playerOneName, playerTwoName) {
     };
 
     const restartGame = () => {
-        console.log("Restart Game..");
+        console.log("Restarting Game..");
         board = Gameboard();
+        board.printBoard();
     }
 
     //First round print:
     printRound();
 
-    return { playRound, restartGame };
+    return { playRound };
 }
 
 const game = GameController('Player1', 'Player2');
