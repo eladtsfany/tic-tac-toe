@@ -23,13 +23,14 @@ function Gameboard() {
     const printBoard = () => { console.log(symbolBoard()) };
 
     // returns false if theres still space to mark in the current game/table. True if table is full of user marks.
-    const isFull = () => {
-        let flag = true;
-        board.forEach(row => row.forEach(cell => {
-            if (cell.getSymbol() === 0) flag = false;
-        }));
-        return flag;
-    }
+    const isFull = () => board.every(row => row.every(cell => cell.getSymbol() !== 0));
+    // const isFull = () => {
+    //     let flag = true;
+    //     board.forEach(row => row.forEach(cell => {
+    //         if (cell.getSymbol() === 0) flag = false;
+    //     }));
+    //     return flag;
+    // }
 
     const markSymbol = (player, row, column) => {
         if (row > 2 || row < 0 || column > 2 || column < 0) {
@@ -148,7 +149,42 @@ function GameController(playerOneName, playerTwoName) {
     //First round print:
     printRound();
 
-    return { playRound };
+    return {
+        playRound,
+        getActivePlayer
+    };
 }
 
 const game = GameController('Player1', 'Player2');
+
+const playerTurnHeader = document.getElementById('activePlayer');
+
+const gridBoard = document.getElementById('gridBoard');
+
+// insert cells in html if using this:
+// const cells = Array.from(gridBoard.querySelectorAll('div.cell'));
+// cells.forEach((cell) => { cell.addEventListener('click', handleClick) });
+
+for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.addEventListener('click', handleClick);
+        cell.setAttribute('data-row', i);
+        cell.setAttribute('data-column', j);
+        gridBoard.appendChild(cell);
+    }
+}
+
+
+function handleClick(e) {
+    //play round
+    const row = e.target.getAttribute('data-row');
+    const column = e.target.getAttribute('data-column');
+    game.playRound(row, column);
+    //update turn header
+    playerTurnHeader.textContent = `${game.getActivePlayer().name}'s turn`;
+    //mark clicked cell
+    e.target.textContent = game.getActivePlayer().token;
+};
+
