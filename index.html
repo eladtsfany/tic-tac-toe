@@ -14,20 +14,16 @@
             <h1>Tic Tac Toe</h1>
         </div>
         <div class="main">
-            <div class="grid-table">
-                <div class="cell">X</div>
-                <div class="cell">O</div>
-                <div class="cell">X</div>
-                <div class="cell">O</div>
-                <div class="cell">X</div>
-                <div class="cell">O</div>
-                <div class="cell">X</div>
-                <div class="cell">O</div>
-                <div class="cell">X</div>
+            <div>
+                <button id="startButton" type="button">Start Game</button>
             </div>
+            <div class="turn-header hidden">
+                <span id="activePlayer"></span><span id="activeSymbol">[<span></span>]</span>
+            </div>
+            <div id="gridBoard"></div>
         </div>
         <div class="footer">
-            <div class="text">Made with 🖤 by: </div>
+            <div class="text">Made with 🤍 by: </div>
             <a href="https://github.com/eladtsfany">
                 <img src="src/images/github-mark-white.svg" alt="github_logo">
                 <div class="text">Elad Tsfany</div>
