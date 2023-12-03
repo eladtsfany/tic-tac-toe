@@ -1,6 +1,62 @@
-// Factory function -> IIFE (Immediately Invoked Function Expression) - Runs when defined..
+const startButton = document.getElementById('startButton').addEventListener('click', startGame);
+const restartButton = document.getElementById('restartButton');
+const turnHeader = document.querySelector('div.turn-header');
+const activePlayerSpan = document.getElementById('activePlayer');
+const activeSymbolSpan = turnHeader.querySelector('#activeSymbol>span');
+const gridBoard = document.getElementById('gridBoard');
 
-//This is NOT the case
+// let game;
+let game = GameController('Player1', 'Player2');
+
+function updateTurnHeader() {
+    activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
+    activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
+}
+
+function startGame(e) {
+    gridBoard.classList.remove('disabled');
+    e.target.classList.add('hide');
+    restartButton.classList.remove('hide');
+    restartButton.addEventListener('click', game.restartGame);
+    turnHeader.classList.remove('hidden');
+}
+
+function restartGame() {
+    game.restartGame();
+    game = GameController('Player1', 'Player2');
+}
+
+function handleClick(e) {
+    // do nothing and return if cell is already marked
+    if (e.target.textContent.trim().length > 0) return;
+
+    //mark clicked cell
+    e.target.textContent = game.getActivePlayer().token;
+
+    //play round
+    const row = e.target.getAttribute('data-row');
+    const column = e.target.getAttribute('data-column');
+    game.playRound(row, column);
+
+    //check for win
+    const winningCells = game.checkWinner(); // if winner found: [[row,column], [row,column], [row,column]] | else: [] 
+    if (winningCells.length !== 0) {
+        gridBoard.classList.add('disabled');
+        // console.log(`winning cells: [${winningCells[0]}, ${winningCells[1]}, ${winningCells[2]}]`);
+        activePlayerSpan.textContent = `${game.getActivePlayer().name} Wins!`;
+        activePlayerSpan.classList.add('win');
+        activeSymbolSpan.classList.add('win');
+        winningCells.forEach(([dataRow, dataColumn]) => {
+            const winnerCell = gridBoard.querySelector(`div.cell[data-row='${dataRow}'][data-column='${dataColumn}']`);
+            winnerCell.classList.add('winner');
+        });
+        // game.restartGame();
+        return;
+    }
+};
+
+
+// Factory function
 function Gameboard() {
     const rows = 3;
     const columns = 3;
@@ -13,7 +69,19 @@ function Gameboard() {
         }
     }
 
-    // outer function
+    // A function that generates a 3x3 board with cell divs.
+    const populateBoard = () => {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.addEventListener('click', handleClick);
+                cell.setAttribute('data-row', i);
+                cell.setAttribute('data-column', j);
+                gridBoard.appendChild(cell);
+            }
+        }
+    }
     populateBoard();
 
     const getBoard = () => board;
@@ -40,11 +108,19 @@ function Gameboard() {
         board[row][column].addSymbol(player);
     }
 
+    const restartBoard = () => {
+        while (gridBoard.firstChild) gridBoard.removeChild(gridBoard.firstChild);
+        // faster but less secured..
+        // gridBoard.innerHTML = '';
+        populateBoard();
+    }
+
     return {
         getBoard,
         printBoard,
         symbolBoard,
         markSymbol,
+        restartBoard,
         isFull
     };
 };
@@ -98,18 +174,17 @@ function GameController(playerOneName, playerTwoName) {
         }
         // Tie check
         if (board.isFull()) {
-            // end game
             board.printBoard();
             console.log("Tie!");
-            restartGame();
+            activePlayerSpan.textContent = `Its a Tie!`;
+            gridBoard.classList.add('disabled');
             return;
         }
 
         // Progress game
         switchPlayerTurn();
+        updateTurnHeader();
         printRound();
-        activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
-        activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
     };
 
     // A function that returns an array containing the winning cells' index if a win was found, and returns an empty array if none. 
@@ -139,9 +214,14 @@ function GameController(playerOneName, playerTwoName) {
 
     const restartGame = () => {
         console.log("Restarting Game..");
-        board = new Gameboard();
+        board = Gameboard();
         board.printBoard();
-        cleanBoard();
+        board.restartBoard();
+        activePlayer = players[0];
+        activePlayerSpan.classList.remove('win');
+        activeSymbolSpan.classList.remove('win');
+        updateTurnHeader();
+        gridBoard.classList.remove('disabled');
     }
 
     //First round print:
@@ -155,72 +235,4 @@ function GameController(playerOneName, playerTwoName) {
         checkWinner,
         restartGame
     };
-}
-
-// const game = GameController('Player1', 'Player2');
-const startButton = document.getElementById('startButton').addEventListener('click', startGame);
-const restartButton = document.getElementById('restartButton');
-const turnHeader = document.querySelector('div.turn-header');
-const activePlayerSpan = document.getElementById('activePlayer');
-const activeSymbolSpan = turnHeader.querySelector('#activeSymbol>span');
-const gridBoard = document.getElementById('gridBoard');
-
-let game;
-
-// A function that generates a 3x3 board with cell divs.
-function populateBoard() {
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.addEventListener('click', handleClick);
-            cell.setAttribute('data-row', i);
-            cell.setAttribute('data-column', j);
-            gridBoard.appendChild(cell);
-        }
-    }
-}
-
-function handleClick(e) {
-    // do nothing and return if cell is already marked
-    if (e.target.textContent.trim().length > 0) return;
-
-    //mark clicked cell
-    e.target.textContent = game.getActivePlayer().token;
-    e.target.classList.add('marked');
-
-    //play round
-    const row = e.target.getAttribute('data-row');
-    const column = e.target.getAttribute('data-column');
-    game.playRound(row, column);
-
-    //check for win
-    const winningCells = game.checkWinner(); // if winner found: [[row,column], [row,column], [row,column]] | else: [] 
-    if (winningCells.length !== 0) {
-        console.log(`winning cells: [${winningCells[0]}, ${winningCells[1]}, ${winningCells[2]}]`);
-        activePlayerSpan.textContent = `${game.getActivePlayer().name} Wins!`;
-        activePlayerSpan.classList.add('win');
-        activeSymbolSpan.classList.add('win');
-        winningCells.forEach(([dataRow, dataColumn]) => {
-            const winnerCell = gridBoard.querySelector(`div.cell[data-row='${dataRow}'][data-column='${dataColumn}']`);
-            winnerCell.classList.add('winner');
-        });
-
-        // game.restartGame();
-        return;
-    }
-};
-
-
-function startGame(e) {
-    game = GameController('Player1', 'Player2');
-    e.target.classList.add('disable');
-    restartButton.addEventListener('click', game.restartGame)
-    restartButton.classList.remove('disable');
-    turnHeader.classList.remove('hidden');
-}
-
-function cleanBoard() {
-    gridBoard.innerHTML = '';
-    populateBoard();
 }
