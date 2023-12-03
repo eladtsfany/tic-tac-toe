@@ -13,6 +13,9 @@ function Gameboard() {
         }
     }
 
+    // outer function
+    populateBoard();
+
     const getBoard = () => board;
 
     const symbolBoard = () => {
@@ -105,6 +108,8 @@ function GameController(playerOneName, playerTwoName) {
         // Progress game
         switchPlayerTurn();
         printRound();
+        activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
+        activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
     };
 
     // A function that returns an array containing the winning cells' index if a win was found, and returns an empty array if none. 
@@ -134,12 +139,15 @@ function GameController(playerOneName, playerTwoName) {
 
     const restartGame = () => {
         console.log("Restarting Game..");
-        board = Gameboard();
+        board = new Gameboard();
         board.printBoard();
+        cleanBoard();
     }
 
     //First round print:
     printRound();
+    activePlayerSpan.textContent = `${getActivePlayer().name}'s turn`;
+    activeSymbolSpan.textContent = `${getActivePlayer().token}`;
 
     return {
         playRound,
@@ -150,23 +158,26 @@ function GameController(playerOneName, playerTwoName) {
 }
 
 // const game = GameController('Player1', 'Player2');
-let game;
 const startButton = document.getElementById('startButton').addEventListener('click', startGame);
+const restartButton = document.getElementById('restartButton');
 const turnHeader = document.querySelector('div.turn-header');
 const activePlayerSpan = document.getElementById('activePlayer');
 const activeSymbolSpan = turnHeader.querySelector('#activeSymbol>span');
 const gridBoard = document.getElementById('gridBoard');
-// hard code cells in html if using this instead of the populating loop below
-// const cells = Array.from(gridBoard.querySelectorAll('div.cell'));
-// cells.forEach((cell) => { cell.addEventListener('click', handleClick) });
-for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.addEventListener('click', handleClick);
-        cell.setAttribute('data-row', i);
-        cell.setAttribute('data-column', j);
-        gridBoard.appendChild(cell);
+
+let game;
+
+// A function that generates a 3x3 board with cell divs.
+function populateBoard() {
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.addEventListener('click', handleClick);
+            cell.setAttribute('data-row', i);
+            cell.setAttribute('data-column', j);
+            gridBoard.appendChild(cell);
+        }
     }
 }
 
@@ -198,15 +209,18 @@ function handleClick(e) {
         // game.restartGame();
         return;
     }
-
-    activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
-    activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
 };
 
 
 function startGame(e) {
     game = GameController('Player1', 'Player2');
-    e.target.classList.add('hidden');
+    e.target.classList.add('disable');
+    restartButton.addEventListener('click', game.restartGame)
+    restartButton.classList.remove('disable');
     turnHeader.classList.remove('hidden');
 }
 
+function cleanBoard() {
+    gridBoard.innerHTML = '';
+    populateBoard();
+}
