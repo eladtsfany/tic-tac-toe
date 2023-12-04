@@ -14,13 +14,16 @@
             <h1>Tic Tac Toe</h1>
         </div>
         <div class="main">
+            <div class="button-wrapper">
+                <button id="startButton" class="btn" type="button">Start Game</button>
+                <button id="restartButton" class="btn hide" type="button">Restart Game</button>
+            </div>
             <div>
-                <button id="startButton" type="button">Start Game</button>
+                <div class="turn-header">
+                    <span></span><span id="activePlayer"></span><span id="activeSymbol">[<span></span>]</span>
+                </div>
+                <div id="gridBoard" class="disabled"></div>
             </div>
-            <div class="turn-header hidden">
-                <span id="activePlayer"></span><span id="activeSymbol">[<span></span>]</span>
-            </div>
-            <div id="gridBoard"></div>
         </div>
         <div class="footer">
             <div class="text">Made with 🤍 by: </div>
