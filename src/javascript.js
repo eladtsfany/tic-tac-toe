@@ -1,32 +1,51 @@
-const startButton = document.getElementById('startButton').addEventListener('click', startGame);
+const startButton = document.getElementById('startButton');
+startButton.addEventListener('click', startDialog);
 const restartButton = document.getElementById('restartButton');
 const turnHeader = document.querySelector('div.turn-header');
 const activePlayerSpan = document.getElementById('activePlayer');
 const activeSymbolSpan = turnHeader.querySelector('#activeSymbol>span');
 const gridBoard = document.getElementById('gridBoard');
+const nameDialog = document.getElementById('nameDialog');
 
-// let game;
-let game = GameController('Player1', 'Player2');
+let game;
 
 function updateTurnHeader() {
     activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
     activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
 }
 
-function startGame(e) {
+function startDialog() {
+    console.log('Name dialog opened');
+    nameDialog.showModal();
+    nameDialog.querySelector('button[type="button"]').addEventListener('click', closeDialog);
+    nameDialog.querySelector('button[type="submit"]').addEventListener('click', handleSubmit);
+}
+
+function handleSubmit(e) {
+    e.preventDefault();
+    const playerName1 = nameDialog.querySelector('input[name="player1"]').value;
+    const playerName2 = nameDialog.querySelector('input[name="player2"]').value;
+    // Close dialog:
+    nameDialog.close();
+    // Start game:
+    startGame(playerName1, playerName2);
+}
+
+function startGame(playerName1, playerName2) {
+    game = GameController(playerName1, playerName2);
     gridBoard.classList.remove('disabled');
-    e.target.classList.add('hide');
+    startButton.classList.add('hide');
     restartButton.classList.remove('hide');
     restartButton.addEventListener('click', game.restartGame);
     turnHeader.classList.remove('hidden');
 }
 
-function restartGame() {
-    game.restartGame();
-    game = GameController('Player1', 'Player2');
+function closeDialog() {
+    nameDialog.close()
+    console.log('Name dialog closed');
 }
 
-function handleClick(e) {
+function handleCellClick(e) {
     // do nothing and return if cell is already marked
     if (e.target.textContent.trim().length > 0) return;
 
@@ -69,21 +88,6 @@ function Gameboard() {
         }
     }
 
-    // A function that generates a 3x3 board with cell divs.
-    const populateBoard = () => {
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.addEventListener('click', handleClick);
-                cell.setAttribute('data-row', i);
-                cell.setAttribute('data-column', j);
-                gridBoard.appendChild(cell);
-            }
-        }
-    }
-    populateBoard();
-
     const getBoard = () => board;
 
     const symbolBoard = () => {
@@ -108,19 +112,34 @@ function Gameboard() {
         board[row][column].addSymbol(player);
     }
 
-    const restartBoard = () => {
+    // A function that generates a 3x3 board with cell divs.
+    const populateBoard = () => {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.addEventListener('click', handleCellClick);
+                cell.setAttribute('data-row', i);
+                cell.setAttribute('data-column', j);
+                gridBoard.appendChild(cell);
+            }
+        }
+    }
+
+    const resetBoard = () => {
         while (gridBoard.firstChild) gridBoard.removeChild(gridBoard.firstChild);
-        // faster but less secured..
+        // Can be done without a loop but more prone to bugs/problems:
         // gridBoard.innerHTML = '';
         populateBoard();
     }
+    resetBoard();
 
     return {
         getBoard,
         printBoard,
         symbolBoard,
         markSymbol,
-        restartBoard,
+        resetBoard,
         isFull
     };
 };
@@ -216,7 +235,7 @@ function GameController(playerOneName, playerTwoName) {
         console.log("Restarting Game..");
         board = Gameboard();
         board.printBoard();
-        board.restartBoard();
+        board.resetBoard();
         activePlayer = players[0];
         activePlayerSpan.classList.remove('win');
         activeSymbolSpan.classList.remove('win');
