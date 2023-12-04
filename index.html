@@ -14,15 +14,40 @@
             <h1>Tic Tac Toe</h1>
         </div>
         <div class="main">
-            <div class="button-wrapper">
+            <dialog id="nameDialog">
+                <form action="dialog">
+                    <button class="exit" type="button">X</button>
+                    <div class="input-wrapper">
+                        <label for="player1">Player [<b>X</b>]</label>
+                        <input name="player1" type="text" placeholder="Player 1">
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="player2">Player [<b>O</b>]</label>
+                        <input name="player2" type="text" placeholder="Player 2">
+                    </div>
+                    <div class="note"> <b>Note:</b> [<b>x</b>] makes the first move</div>
+                    <button type="submit">Play</button>
+                </form>
+            </dialog>
+            <div>
                 <button id="startButton" class="btn" type="button">Start Game</button>
                 <button id="restartButton" class="btn hide" type="button">Restart Game</button>
             </div>
             <div>
-                <div class="turn-header">
+                <div class="turn-header hidden">
                     <span></span><span id="activePlayer"></span><span id="activeSymbol">[<span></span>]</span>
                 </div>
-                <div id="gridBoard" class="disabled"></div>
+                <div id="gridBoard" class="disabled">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                </div>
             </div>
         </div>
         <div class="footer">
