@@ -11,11 +11,11 @@ body {
     color: var(--black-text);
 }
 
-.container {
+.layout {
     height: 100vh;
     display: grid;
-    /* grid-template-rows: 2fr 8fr 1fr; */
-    grid-template-rows: 3fr 11fr 1fr;
+    grid-template-rows: 2fr 8fr 1fr;
+    grid-template-rows: 5fr 16fr 2fr;
 }
 
 .header,
@@ -30,6 +30,7 @@ body {
 
 .header h1 {
     margin: 0;
+    font-size: 5rem;
     font-size: 6rem;
 }
 
@@ -41,7 +42,7 @@ div.text {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1rem;
+    /* gap: 1rem; */
     align-items: center;
     padding: 1em;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
@@ -91,9 +92,8 @@ button {
 
 .btn {
     font-size: 1.75rem;
-    border-radius: 12px;
-    border-radius: 10px;
     border-radius: 8px;
+    border-radius: 1rem;
     border: 6px solid var(--black-border);
     padding: 0.5rem;
     min-width: 220px;
@@ -111,7 +111,7 @@ button {
     outline-offset: -5px;
     background-color: #1f1f1f;
     color: #dfdfdf;
-    transform: scale(1.25);
+    transform: scale(1.15);
 }
 
 #gridBoard {
