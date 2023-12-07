@@ -92,11 +92,10 @@ button {
 
 .btn {
     font-size: 1.75rem;
-    border-radius: 8px;
-    border-radius: 1rem;
+    border-radius: 12px;
     border: 6px solid var(--black-border);
     padding: 0.5rem;
-    min-width: 220px;
+    min-width: 200px;
     min-height: 80px;
     transition:
         transform 250ms ease,
@@ -106,9 +105,9 @@ button {
 }
 
 .btn:hover {
-    border: 8px solid #dfdfdf;
+    border: 6px solid #dfdfdf;
     outline: 8px solid var(--black-border);
-    outline-offset: -5px;
+    outline-offset: -4px;
     background-color: #1f1f1f;
     color: #dfdfdf;
     transform: scale(1.15);
