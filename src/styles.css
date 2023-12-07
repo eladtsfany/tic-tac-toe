@@ -208,8 +208,9 @@ button {
     padding: 1em;
     border-radius: .25em;
     color: var(--black-text);
-    border: 3px solid #1f1f1f;
+    border: 4px solid #1f1f1f;
     /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; */
+    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
 }
 
 #nameDialog::backdrop {
@@ -262,5 +263,5 @@ form[action="dialog"] button.exit {
 dialog div.note {
     align-self: center;
     font-size: 0.75em;
-    margin: 1em 0 0.25em 0;
+    margin: 1.25em 0 0.375em 0;
 }
