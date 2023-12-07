@@ -109,7 +109,7 @@ button {
     border: 8px solid #dfdfdf;
     outline: 8px solid var(--black-border);
     outline-offset: -5px;
-    background-color: #2f2f2f;
+    background-color: #1f1f1f;
     color: #dfdfdf;
     transform: scale(1.25);
 }
@@ -213,7 +213,7 @@ button {
 }
 
 #nameDialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
 }
 
 form[action="dialog"] {
