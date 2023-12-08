@@ -11,7 +11,7 @@ let game;
 
 function updateTurnHeader() {
     activePlayerSpan.textContent = `${game.getActivePlayer().name}'s turn`;
-    activeSymbolSpan.textContent = `${game.getActivePlayer().token}`;
+    activeSymbolSpan.textContent = game.getActivePlayer().token;
 }
 
 function startDialog() {
@@ -69,7 +69,6 @@ function handleCellClick(e) {
             const winnerCell = gridBoard.querySelector(`div.cell[data-row='${dataRow}'][data-column='${dataColumn}']`);
             winnerCell.classList.add('winner');
         });
-        // game.restartGame();
         return;
     }
 };
@@ -188,7 +187,7 @@ function GameController(playerOneName, playerTwoName) {
         // Winner check
         if (checkWinner().length !== 0) {
             board.printBoard();
-            console.log(`${getActivePlayer().name} Won!`);
+            console.log(`${getActivePlayer().name} Wins!`);
             return;
         }
         // Tie check
@@ -246,7 +245,7 @@ function GameController(playerOneName, playerTwoName) {
     //First round print:
     printRound();
     activePlayerSpan.textContent = `${getActivePlayer().name}'s turn`;
-    activeSymbolSpan.textContent = `${getActivePlayer().token}`;
+    activeSymbolSpan.textContent = getActivePlayer().token;
 
     return {
         playRound,
